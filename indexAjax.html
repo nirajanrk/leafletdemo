@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>GeoJSON  - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	
+
+	<link rel="stylesheet" href="/leafletdemo/leaflet.css"/>
+	<script>
+		  $(document).ready(function(){
+		  $.ajax({
+		    url: "http://ca.keybridgewireless.com/tvws/rest/service/range/1/10",
+		    accepts: 'application/json',
+		    dataType: 'json',
+		    success: function(data) {
+		      alert("Temperature is: "  ); //+ data.main.temp
+		    },
+		    error: function() {
+		      alert("error");
+		    }
+		  });        
+		});
+	</script>
+	<script src="/leafletdemo/leaflet.js"></script>
+	<script src="/leafletdemo/jquery-1.11.3.min.js"></script>
+
+
+	
+	<style>
+		#map {
+			width: 100%;
+			height: 600px;
+		}
+	</style>
+
+	
+</head>
+<body>
+
+<div id='map'></div>
+
+
+<script>
+	console.log('start');
+	var map = L.map('map').setView([45.032164, -65.110556], 4);
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.light'
+	}).addTo(map);
+
+
+	function addDataToMap(data, map) {
+	    var dataLayer = L.geoJson(data);
+	    dataLayer.addTo(map);
+	}
+
+	var towerIcon = L.icon({
+		iconUrl: 'tower.png',
+		//shadowUrl: 'tower-shadow.png',
+		iconSize: [32, 37], // size of the icon
+		//shadowSize:   [50, 64], // size of the shadow
+		iconAnchor: [16, 37],   // point of the icon which will correspond to marker's location
+		//shadowAnchor: [4, 62],  // the same for the shadow
+		popupAnchor: [0, -28]  // point from which the popup should open relative to the iconAnchor
+	});
+
+	//Extend the Default marker class
+         var RedIcon = L.Icon.Default.extend({
+            options: {
+            	    iconUrl: 'marker-icon-red.png' 
+            }
+         });
+         var redIcon = new RedIcon();
+
+
+	// This points to the geoJson feed
+	//$.getJSON("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data) { addDataToMap(data, map); });
+	$.getJSON("map.geojson", function(data) { addDataToMap(data, map); });
+
+	var polygonStyle = {
+	    weight: 1,
+	    radius: 8,
+	    fillColor: "#ff00ff",
+	    color: "#000",
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};
+
+	var lineStyle = {
+	    weight: 5,
+	    fillColor: "#3378ff",
+	    color: "#f00",
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};
+
+	var pointStyle = {
+	    weight: 2,
+	    fillColor: "#00ffff",
+	    color: "#ff0",
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};	
+	var genericStyle = {
+	    weight: 2,
+	    radius: 3,
+	    fillColor: "#ff00ff",
+	    color: "#f0f",
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};
+
+	var style1 = {
+	    weight: 0.1,
+	    radius: 15,
+	    fillColor: "#0000ff",
+	    color: "#f00",
+	    opacity: 1,
+	    fillOpacity: 1
+	};
+
+	var style2 = {
+	    weight: 0.8,
+	    radius: 10,
+	    fillColor: "#ff0000",
+	    color: "#ff0",
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};
+
+	//this function is not used at the moment
+	function generateStyle(feature) {
+		switch(feature.geometry.type){
+			case "Polygon":
+				return polygonStyle; break;
+			case "LineString":
+				return lineStyle; break;
+			case "Point":
+				return lineStyle; break;	
+			default:
+				return genericStyle; 
+		}
+    }
+	
+	
+	function addDataToMap(data, map) {
+	    var dataLayer = L.geoJson(data, {
+	    	style: function(feature){
+	    		switch(feature.geometry.type){
+					case "Polygon":
+						return polygonStyle; break;
+					case "LineString":
+						return lineStyle; break;
+					case "Point":
+						return pointStyle; break;
+					default:
+						return genericStyle; 
+				}
+	    	},
+
+			pointToLayer: function (feature, latlng) {
+    			switch(feature.properties.category){
+	    			case 'Category 1':
+	    				return L.circleMarker(latlng, style1); break;
+	    			case 'Category 2':
+	    				return L.circleMarker(latlng, style2); break;
+	    			case 'Category 3':
+	    				return L.marker(latlng, {icon: redIcon}); break;	
+	    			case 'tower':
+	    				return L.marker(latlng, {icon: towerIcon}); break;
+	    			default:
+	    				return L.circleMarker(latlng, polygonStyle);	
+	    		}
+    		},
+
+	    	
+	        onEachFeature: function(feature, layer) {
+	            var popupText = "A sample " + feature.geometry.type
+	            	+ "<br>category: " + feature.properties.category
+	             	+ "<br>name: " + feature.properties.name
+	                + "<br><a href='" + feature.properties.url + "'>More info</a>";
+	            //var popupText = "Popup Text"    
+	            layer.bindPopup(popupText); 
+	        }
+	        });
+	    dataLayer.addTo(map);
+	}
+</script>
+
+
+
+</body>
+</html>
