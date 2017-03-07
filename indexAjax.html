@@ -73,7 +73,8 @@
 
 	// This points to the geoJson feed
 	//$.getJSON("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data) { addDataToMap(data, map); });
-	$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) { addDataToMap(data, map); });
+	$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) {console.log(data); });
+	//$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) { addDataToMap(data, map); });
 
 	var polygonStyle = {
 	    weight: 1,
