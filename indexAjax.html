@@ -10,21 +10,7 @@
 	
 
 	<link rel="stylesheet" href="/leafletdemo/leaflet.css"/>
-	<script>
-		  $(document).ready(function(){
-		  $.ajax({
-		    url: "http://ca.keybridgewireless.com/tvws/rest/service/range/1/10",
-		    accepts: 'application/json',
-		    dataType: 'json',
-		    success: function(data) {
-		      alert("Temperature is: "  ); //+ data.main.temp
-		    },
-		    error: function() {
-		      alert("error");
-		    }
-		  });        
-		});
-	</script>
+	
 	<script src="/leafletdemo/leaflet.js"></script>
 	<script src="/leafletdemo/jquery-1.11.3.min.js"></script>
 
@@ -45,6 +31,10 @@
 
 
 <script>
+
+
+
+
 	console.log('start');
 	var map = L.map('map').setView([45.032164, -65.110556], 4);
 
@@ -83,7 +73,7 @@
 
 	// This points to the geoJson feed
 	//$.getJSON("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data) { addDataToMap(data, map); });
-	$.getJSON("map.geojson", function(data) { addDataToMap(data, map); });
+	$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) { addDataToMap(data, map); });
 
 	var polygonStyle = {
 	    weight: 1,
