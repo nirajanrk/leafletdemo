@@ -73,8 +73,13 @@
 
 	// This points to the geoJson feed
 	//$.getJSON("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data) { addDataToMap(data, map); });
-	$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) {console.log(data); });
-	//$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) { addDataToMap(data, map); });
+	
+	//$.getJSON("http://ca.keybridgewireless.com/tvws/rest/service/range/1/10", function(data) {console.log(data); });
+	//This doesn't work because Cross site calls aren't allowed via javascript. If code were running on keybridgewireless.com domain, it would work.
+
+
+	//$.getJSON("map.geojson", function(data) { addDataToMap(data, map); });
+	$.getJSON("keybridge.json", function(data) { addDataToMap(data, map); });
 
 	var polygonStyle = {
 	    weight: 1,
